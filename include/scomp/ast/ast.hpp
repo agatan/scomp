@@ -7,4 +7,30 @@
 #include <scomp/ast/definition.hpp>
 #include <scomp/ast/type.hpp>
 
+namespace scomp {
+  namespace ast {
+
+    template <typename T, typename... Args>
+    expression make_expression(Args&&... args) {
+      return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename T, typename... Args>
+    statement make_statement(Args&&... args) {
+      return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename T, typename... Args>
+    definition make_definition(Args&&... args) {
+      return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename T, typename... Args>
+    type make_type(Args&&... args) {
+      return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+  } // namespace ast
+} // namespace scomp
+
 #endif
