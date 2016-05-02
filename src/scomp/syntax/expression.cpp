@@ -14,7 +14,7 @@ namespace scomp {
     namespace parser {
 
       // primary
-      parser_type<int> integer() {
+      static parser_type<int> integer() {
         return cbx::map(cbx::many1(cbx::digit()), [](auto&& is) {
           int acc = 0;
           for (auto c : is) {
@@ -24,13 +24,13 @@ namespace scomp {
         });
       }
 
-      parser_type<bool> boolean() {
+      static parser_type<bool> boolean() {
         return cbx::choice(
             cbx::map(keyword("true"), [](auto) { return true; }),
             cbx::map(keyword("false"), [](auto) { return false; }));
       }
 
-      parser_type<ast::expression> literal() {
+      static parser_type<ast::expression> literal() {
         return cbx::expected(
             cbx::choice(
                 cbx::map(integer(),
@@ -46,14 +46,14 @@ namespace scomp {
             "literal expression");
       }
 
-      parser_type<ast::expression> variable() {
+      static parser_type<ast::expression> variable() {
         return cbx::map(varname(), [](auto&& s) {
           return ast::make_expression<ast::node::var_expr>(
               std::forward<decltype(s)>(s));
         });
       }
 
-      parser_type<ast::expression> parens() {
+      static parser_type<ast::expression> parens() {
         return cbx::map(cbx::between(lex(cbx::token('(')), lex(cbx::token(')')),
                                      lex(cbx::lazy_fun(expression))),
                         [](auto&& e) {
@@ -62,11 +62,11 @@ namespace scomp {
                         });
       }
 
-      parser_type<ast::expression> primary() {
+      static parser_type<ast::expression> primary() {
         return cbx::choice(parens(), literal(), variable());
       }
 
-      parser_type<std::vector<ast::expression>> args() {
+      static parser_type<std::vector<ast::expression>> args() {
         return cbx::map(
             cbx::sep_by(lex(cbx::lazy_fun(expression)), lex(cbx::token(','))),
             [](auto&& es) {
@@ -76,7 +76,7 @@ namespace scomp {
             });
       }
 
-      parser_type<ast::expression> apply() {
+      static parser_type<ast::expression> apply() {
         auto const applicative_parser = cbx::skip_seq(cbx::spaces())(
             primary(), cbx::many(cbx::between(lex(cbx::token('(')),
                                               lex(cbx::token(')')), args())));
@@ -91,7 +91,7 @@ namespace scomp {
         });
       }
 
-      parser_type<ast::expression> block() {
+      static parser_type<ast::expression> block() {
         parser_type<std::vector<ast::statement>> const stmts =
             cbx::map(cbx::many(lex(cbx::lazy_fun(statement))), [](auto&& ss) {
               std::vector<ast::statement> vs;
@@ -105,7 +105,7 @@ namespace scomp {
             });
       }
 
-      parser_type<ast::expression> multiplicative() {
+      static parser_type<ast::expression> multiplicative() {
         auto const op = cbx::map(
             lex(cbx::choice(cbx::token('*'), cbx::token('/'))), [](auto c) {
               return [c](auto&& lhs, auto&& rhs) {
@@ -117,7 +117,7 @@ namespace scomp {
         return cbx::chainl1(lex(cbx::choice(block(), apply())), op);
       }
 
-      parser_type<ast::expression> additive() {
+      static parser_type<ast::expression> additive() {
         auto const op = cbx::map(
             lex(cbx::choice(cbx::token('+'), cbx::token('-'))), [](auto c) {
               return [c](auto&& lhs, auto&& rhs) {

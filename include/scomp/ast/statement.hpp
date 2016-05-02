@@ -31,6 +31,13 @@ namespace scomp {
         expression value;
 
         explicit valdef_stmt() = default;
+        explicit valdef_stmt(std::string name, boost::optional<type>&& t,
+                             expression&& v)
+            : name(std::move(name)), typ(std::move(t)), value(std::move(v)) {}
+        explicit valdef_stmt(std::string name, boost::optional<type> const& t,
+                             expression const& v)
+            : name(std::move(name)), typ(t), value(v) {}
+
         explicit valdef_stmt(std::string name, type&& t, expression&& v)
             : name(std::move(name)), typ(std::move(t)), value(std::move(v)) {}
         explicit valdef_stmt(std::string name, type const& t,

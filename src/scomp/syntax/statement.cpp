@@ -5,6 +5,7 @@
 #include <scomp/ast/ast.hpp>
 #include <scomp/syntax/helper.hpp>
 #include <scomp/syntax/expression.hpp>
+#include <scomp/syntax/type.hpp>
 
 namespace scomp {
   namespace syntax {
@@ -13,14 +14,27 @@ namespace scomp {
 
     namespace parser {
 
-      parser_type<ast::statement> expr_statement() {
+      static parser_type<ast::statement> expr_statement() {
         return cbx::map(cbx::lazy_fun(expression), [](auto&& e) {
           return ast::make_statement < ast::node::expr_stmt > (std::move(e));
         });
       }
 
+      static parser_type<ast::statement> valdef_statement() {
+        auto const p = cbx::skip_seq(cbx::spaces())(
+            keyword("val"), varname(), optional_type_spec(), cbx::token('='),
+            cbx::lazy_fun(expression));
+        return cbx::map(p, [](auto&& t) {
+          auto&& name = std::get<1>(t);
+          auto&& ty = std::get<2>(t);
+          auto&& value = std::get<4>(t);
+          return ast::make_statement<ast::node::valdef_stmt>(
+              std::move(name), std::move(ty), std::move(value));
+        });
+      }
+
       parser_type<ast::statement> statement() {
-        return expr_statement();
+        return cbx::choice(valdef_statement(), expr_statement());
       }
 
     } // namespace parser
