@@ -91,6 +91,20 @@ namespace scomp {
         });
       }
 
+      parser_type<ast::expression> block() {
+        parser_type<std::vector<ast::statement>> const stmts =
+            cbx::map(cbx::many(lex(cbx::lazy_fun(statement))), [](auto&& ss) {
+              std::vector<ast::statement> vs;
+              std::move(std::begin(ss), std::end(ss), std::back_inserter(vs));
+              return vs;
+            });
+        return cbx::map(
+            cbx::between(lex(cbx::token('{')), lex(cbx::token('}')), stmts),
+            [](auto&& ss) {
+              return ast::make_expression<ast::node::block_expr>(std::move(ss));
+            });
+      }
+
       parser_type<ast::expression> multiplicative() {
         auto const op = cbx::map(
             lex(cbx::choice(cbx::token('*'), cbx::token('/'))), [](auto c) {
@@ -100,7 +114,7 @@ namespace scomp {
                     std::forward<decltype(rhs)>(rhs));
               };
             });
-        return cbx::chainl1(lex(apply()), op);
+        return cbx::chainl1(lex(cbx::choice(block(), apply())), op);
       }
 
       parser_type<ast::expression> additive() {

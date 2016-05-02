@@ -37,11 +37,11 @@ namespace scomp {
       }
 
       std::string block_expr::to_string() const {
-        return (boost::format("{\n%s\n}") %
+        return (boost::format("{ %s }") %
                 boost::algorithm::join(
                     body | boost::adaptors::transformed(
                                [](auto const& e) { return stringize(e); }),
-                    "\n"))
+                    "; "))
             .str();
       }
 
