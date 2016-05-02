@@ -9,7 +9,8 @@ namespace scomp {
 
       cbx::parser<std::string, stream_type> reserved() {
         return cbx::choice(cbx::string("val"), cbx::string("true"),
-                           cbx::string("false"), cbx::string("def"));
+                           cbx::string("false"), cbx::string("def"),
+                           cbx::string("return"));
       }
 
       cbx::parser<std::string, stream_type> keyword(std::string const& s) {

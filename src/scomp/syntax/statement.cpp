@@ -33,8 +33,18 @@ namespace scomp {
         });
       }
 
+      static parser_type<ast::statement> return_statement() {
+        auto const p =
+            cbx::skip_seq(cbx::spaces())(keyword("return"), expression());
+        return cbx::map(p, [](auto&& t) {
+          return ast::make_statement<ast::node::return_stmt>(
+              std::get<1>(std::move(t)));
+        });
+      }
+
       parser_type<ast::statement> statement() {
-        return cbx::choice(valdef_statement(), expr_statement());
+        return cbx::choice(return_statement(), valdef_statement(),
+                           expr_statement());
       }
 
     } // namespace parser
