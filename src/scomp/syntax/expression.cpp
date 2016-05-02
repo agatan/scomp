@@ -64,7 +64,7 @@ namespace scomp {
       }
 
       parser_type<ast::expression> primary() {
-        return cbx::choice(variable(), literal(), parens());
+        return cbx::choice(parens(), literal(), variable());
       }
 
       parser_type<std::vector<ast::expression>> args() {
@@ -78,19 +78,46 @@ namespace scomp {
       }
 
       parser_type<ast::expression> apply() {
-        return cbx::map(
-            cbx::skip_seq(cbx::spaces())(
-                primary(), cbx::between(lex(cbx::token('(')),
-                                         lex(cbx::token(')')), args())),
-            [](auto&& t) {
-              return ast::make_expression<ast::node::apply_expr>(
-                  std::get<0>(std::forward<decltype(t)>(t)),
-                  std::get<1>(std::forward<decltype(t)>(t)));
+        auto const applicative_parser = cbx::skip_seq(cbx::spaces())(
+            primary(), cbx::many(cbx::between(lex(cbx::token('(')),
+                                              lex(cbx::token(')')), args())));
+        return cbx::map(applicative_parser, [](auto&& t) {
+          ast::expression res = std::get<0>(t);
+          std::deque<std::vector<ast::expression>> args_list = std::get<1>(t);
+          for (auto&& args : std::move(args_list)) {
+            res = ast::make_expression<ast::node::apply_expr>(std::move(res),
+                                                              std::move(args));
+          }
+          return res;
+        });
+      }
+
+      parser_type<ast::expression> multiplicative() {
+        auto const op = cbx::map(
+            lex(cbx::choice(cbx::token('*'), cbx::token('/'))), [](auto c) {
+              return [c](auto&& lhs, auto&& rhs) {
+                return ast::make_expression<ast::node::binop_expr>(
+                    std::string(1, c), std::forward<decltype(lhs)>(lhs),
+                    std::forward<decltype(rhs)>(rhs));
+              };
             });
+        return cbx::chainl1(lex(apply()), op);
+      }
+
+      parser_type<ast::expression> additive() {
+        auto const op = cbx::map(
+            lex(cbx::choice(cbx::token('+'), cbx::token('-'))), [](auto c) {
+              return [c](auto&& lhs, auto&& rhs) {
+                return ast::make_expression<ast::node::binop_expr>(
+                    std::string(1, c), std::forward<decltype(lhs)>(lhs),
+                    std::forward<decltype(rhs)>(rhs));
+              };
+            });
+        return cbx::chainl1(lex(multiplicative()), op);
       }
 
       parser_type<ast::expression> expression() {
-        return cbx::expected(cbx::choice(cbx::try_(apply()), primary()), "expression");
+        return cbx::expected(additive(), "expression");
       }
 
     } // namespace parser

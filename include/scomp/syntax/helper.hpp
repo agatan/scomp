@@ -17,6 +17,8 @@ namespace scomp {
         return cbx::skip(std::forward<Parser>(parser), cbx::spaces());
       }
 
+      cbx::parser<std::string, stream_type> reserved();
+
       cbx::parser<std::string, stream_type> keyword(std::string const& s);
 
       cbx::parser<std::string, stream_type> varname();
