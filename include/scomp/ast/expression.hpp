@@ -73,11 +73,10 @@ namespace scomp {
       };
 
       struct block_expr {
-        // TODO: use statement for element
-        std::vector<expression> body;
+        std::vector<statement> body;
 
-        explicit block_expr(std::vector<expression>&& b) : body(std::move(b)) {}
-        explicit block_expr(std::vector<expression> const& b) : body(b) {}
+        explicit block_expr(std::vector<statement>&& b) : body(std::move(b)) {}
+        explicit block_expr(std::vector<statement> const& b) : body(b) {}
 
         std::string to_string() const;
       };

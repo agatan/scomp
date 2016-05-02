@@ -4,6 +4,7 @@
 
 #include <scomp/ast/ast.hpp>
 #include <scomp/syntax/helper.hpp>
+#include <scomp/syntax/statement.hpp>
 
 namespace scomp {
   namespace syntax {
@@ -11,8 +12,6 @@ namespace scomp {
     namespace cbx = coco::combix;
 
     namespace parser {
-
-      parser_type<ast::expression> expression();
 
       // primary
       parser_type<int> integer() {

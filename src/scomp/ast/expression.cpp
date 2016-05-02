@@ -4,6 +4,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
+#include <scomp/ast/statement.hpp>
+
 namespace scomp {
   namespace ast {
     namespace node {
