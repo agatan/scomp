@@ -12,6 +12,7 @@ namespace scomp {
 
     namespace parser {
       parser_type<ast::type> type();
+      parser_type<ast::type> type_spec();
       parser_type<boost::optional<ast::type>> optional_type_spec();
     } // namespace parser
 

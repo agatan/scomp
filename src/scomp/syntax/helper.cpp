@@ -14,9 +14,11 @@ namespace scomp {
       }
 
       cbx::parser<std::string, stream_type> keyword(std::string const& s) {
-        return lex(cbx::skip(
-            cbx::string(s), cbx::not_followed_by(cbx::choice(
-                                cbx::digit(), cbx::alpha(), cbx::token('_')))));
+        return cbx::expected(
+            lex(cbx::skip(cbx::string(s),
+                          cbx::not_followed_by(cbx::choice(
+                              cbx::digit(), cbx::alpha(), cbx::token('_'))))),
+            "keyword '" + s + "'");
       }
 
       cbx::parser<std::string, stream_type> varname() {
@@ -28,8 +30,10 @@ namespace scomp {
           return std::get<0>(std::forward<decltype(s)>(s)) +
                  std::get<1>(std::forward<decltype(s)>(s));
         });
-        return cbx::map(cbx::seq(cbx::not_followed_by(reserved()), var),
-                        [](auto&& t) { return std::get<1>(std::move(t)); });
+        return cbx::expected(
+            cbx::map(cbx::seq(cbx::not_followed_by(reserved()), var),
+                     [](auto&& t) { return std::get<1>(std::move(t)); }),
+            "identifier");
       }
 
     } // namespace parser

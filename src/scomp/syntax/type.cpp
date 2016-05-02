@@ -22,11 +22,15 @@ namespace scomp {
         return cbx::expected(primary_type(), "type");
       }
 
-      parser_type<boost::optional<ast::type>> optional_type_spec() {
-        auto const spec =
+      parser_type<ast::type> type_spec() {
+        return cbx::expected(
             cbx::map(cbx::skip_seq(cbx::spaces())(cbx::token(':'), type()),
-                     [](auto&& t) { return std::get<1>(std::move(t)); });
-        return cbx::option(spec);
+                     [](auto&& t) { return std::get<1>(std::move(t)); }),
+            "type specifier");
+      }
+
+      parser_type<boost::optional<ast::type>> optional_type_spec() {
+        return cbx::option(type_spec());
       }
 
     } // namespace parser

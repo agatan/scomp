@@ -42,6 +42,22 @@ namespace scomp {
         explicit fun_def() = default;
         fun_def(std::string name,
                 std::vector<std::pair<std::string, type>> const& params,
+                boost::optional<type> const& ret,
+                expression const& body)
+            : name(std::move(name)),
+              params(params),
+              return_type(ret),
+              body(body) {}
+        fun_def(std::string name,
+                std::vector<std::pair<std::string, type>>&& params,
+                boost::optional<type>&& ret,
+                expression&& body)
+            : name(std::move(name)),
+              params(std::move(params)),
+              return_type(std::move(ret)),
+              body(std::move(body)) {}
+        fun_def(std::string name,
+                std::vector<std::pair<std::string, type>> const& params,
                 expression const& body)
             : name(std::move(name)),
               params(params),
