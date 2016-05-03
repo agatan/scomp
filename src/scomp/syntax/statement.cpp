@@ -51,7 +51,8 @@ namespace scomp {
 
     cbx::parse_result<ast::statement, parser::stream_type> parse_statement(
         std::string const& s) {
-      auto stream = cbx::range_stream(s);
+      auto stream =
+          cbx::make_positioned<cbx::source_position>(cbx::range_stream(s));
       auto const p =
           cbx::between(cbx::spaces(), cbx::seq(cbx::spaces(), cbx::eof()),
                        parser::statement());

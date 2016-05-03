@@ -66,14 +66,17 @@ namespace scomp {
       }
 
       parser_type<ast::definition> definition() {
-        return cbx::choice(fun_definition(), val_definition());
+        return cbx::choice(
+            cbx::expected(fun_definition(), "function definition"),
+            cbx::expected(val_definition(), "variable definition"));
       }
 
     } // namespace parser
 
     cbx::parse_result<ast::definition, parser::stream_type> parse_definition(
         std::string const& s) {
-      auto stream = cbx::range_stream(s);
+      auto stream =
+          cbx::make_positioned<cbx::source_position>(cbx::range_stream(s));
       auto const p =
           cbx::between(cbx::spaces(), cbx::seq(cbx::spaces(), cbx::eof()),
                        parser::definition());
