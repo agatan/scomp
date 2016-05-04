@@ -15,30 +15,34 @@ namespace scomp {
     namespace parser {
 
       static parser_type<ast::statement> expr_statement() {
-        return cbx::map(cbx::lazy_fun(expression), [](auto&& e) {
-          return ast::make_statement < ast::node::expr_stmt > (std::move(e));
-        });
+        return cbx::map(cbx::positioned(cbx::lazy_fun(expression)),
+                        [](auto&& e) {
+                          return ast::make_statement<ast::node::expr_stmt>(
+                              e.first, std::move(e.second));
+                        });
       }
 
       static parser_type<ast::statement> valdef_statement() {
         auto const p = cbx::skip_seq(cbx::spaces())(
             keyword("val"), varname(), optional_type_spec(), cbx::token('='),
             cbx::lazy_fun(expression));
-        return cbx::map(p, [](auto&& t) {
+        return cbx::map(cbx::positioned(p), [](auto&& p) {
+          auto&& pos = p.first;
+          auto&& t = p.second;
           auto&& name = std::get<1>(t);
           auto&& ty = std::get<2>(t);
           auto&& value = std::get<4>(t);
           return ast::make_statement<ast::node::valdef_stmt>(
-              std::move(name), std::move(ty), std::move(value));
+              pos, std::move(name), std::move(ty), std::move(value));
         });
       }
 
       static parser_type<ast::statement> return_statement() {
         auto const p =
             cbx::skip_seq(cbx::spaces())(keyword("return"), expression());
-        return cbx::map(p, [](auto&& t) {
+        return cbx::map(cbx::positioned(p), [](auto&& t) {
           return ast::make_statement<ast::node::return_stmt>(
-              std::get<1>(std::move(t)));
+              t.first, std::get<1>(std::move(t.second)));
         });
       }
 
