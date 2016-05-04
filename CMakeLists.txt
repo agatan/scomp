@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(combix_calc CXX)
+project(scomp CXX)
 
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0 -pg")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -s -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 
 include_directories(include)
 add_subdirectory(src)
