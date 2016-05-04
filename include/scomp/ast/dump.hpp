@@ -4,9 +4,12 @@
 #include <boost/property_tree/ptree.hpp>
 
 #include <scomp/ast/ast_fwd.hpp>
+#include <scomp/ast/module.hpp>
 
 namespace scomp {
   namespace ast {
+
+    void dump_module(boost::property_tree::ptree&, module const&);
 
     void dump_type(boost::property_tree::ptree&, type const&);
     void dump_definition(boost::property_tree::ptree&, definition const&);

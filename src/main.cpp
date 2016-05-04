@@ -14,12 +14,10 @@ int main() {
     src += line + '\n';
   }
 
-  auto res = scomp::syntax::parse_toplevel(src);
+  auto res = scomp::syntax::parse_module("<stdin>", src);
   if (res) {
     boost::property_tree::ptree root;
-    for (auto&& d: *res) {
-      scomp::ast::dump_definition(root, d);
-    }
+    scomp::ast::dump_module(root, res.unwrap());
     boost::property_tree::write_json(std::cout, root);
   } else {
     auto&& pos = res.unwrap_error().position();

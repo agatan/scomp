@@ -5,18 +5,18 @@
 #include <string>
 
 #include <scomp/syntax/config.hpp>
-#include <scomp/ast/ast_fwd.hpp>
+#include <scomp/ast/module.hpp>
 
 namespace scomp {
   namespace syntax {
 
     namespace parser {
-      parser_type<std::vector<ast::definition>> toplevel();
+      parser_type<ast::module> module();
     } // namespace parser
 
-    coco::combix::parse_result<std::vector<ast::definition>,
-                               parser::stream_type>
-    parse_toplevel(std::string const&);
+    // parse_module(file_name, source)
+    coco::combix::parse_result<ast::module, parser::stream_type> parse_module(
+        std::string const&, std::string const&);
 
   } // namespace syntax
 } // namespace scomp

@@ -170,6 +170,17 @@ namespace scomp {
 
     } // namespace detail
 
+    void dump_module(ptree::ptree& tree, module const& mod) {
+      ptree::ptree& mod_tree = tree.add("module", "");
+      mod_tree.add("name", mod.name());
+      ptree::ptree& defs = mod_tree.add("definitions", "");
+      for (auto&& d: mod.defs()) {
+        ptree::ptree child;
+        dump_definition(child, d);
+        defs.push_back(std::make_pair("", child));
+      }
+    }
+
     void dump_type(ptree::ptree& tree, type const& typ) {
       boost::apply_visitor(detail::type_visitor(tree), typ);
     }

@@ -6,6 +6,7 @@
 #include <scomp/ast/statement.hpp>
 #include <scomp/ast/definition.hpp>
 #include <scomp/ast/type.hpp>
+#include <scomp/ast/module.hpp>
 
 namespace scomp {
   namespace ast {

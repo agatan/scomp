@@ -12,25 +12,25 @@ namespace scomp {
 
       namespace cbx = coco::combix;
 
-      parser_type<std::vector<ast::definition>> toplevel() {
+      parser_type<ast::module> module(std::string filename) {
         auto const sep = cbx::many(lex(cbx::token(';')));
         auto const p = cbx::sep_by(definition(), sep);
-        return cbx::map(p, [](auto&& ds) {
+        return cbx::map(p, [filename = std::move(filename)](auto&& ds) {
           std::vector<ast::definition> dvs;
           std::move(ds.begin(), ds.end(), std::back_inserter(dvs));
-          return dvs;
+          return ast::module(std::move(filename), std::move(dvs));
         });
       }
 
     } // namespace parser
 
-    coco::combix::parse_result<std::vector<ast::definition>, parser::stream_type>
-    parse_toplevel(std::string const& s) {
+    coco::combix::parse_result<ast::module, parser::stream_type>
+    parse_module(std::string const& filename, std::string const& s) {
       auto stream =
           cbx::make_positioned<cbx::source_position>(cbx::range_stream(s));
       auto const p =
           cbx::between(cbx::spaces(), cbx::seq(cbx::spaces(), cbx::eof()),
-                       parser::toplevel());
+                       parser::module(filename));
       return cbx::parse(p, stream);
     }
 
