@@ -1,6 +1,7 @@
 #ifndef SCOMP_AST_NODE_BASE_HPP_
 #define SCOMP_AST_NODE_BASE_HPP_
 
+#include <boost/variant.hpp>
 #include <coco/combix/source_position.hpp>
 
 namespace scomp {
@@ -33,6 +34,22 @@ namespace scomp {
       };
 
     } // namespace node
+
+    template <typename T>
+    auto postiion(T const& t) -> decltype(t.position()) {
+      return t.position();
+    }
+
+    template <typename T>
+    auto position(std::shared_ptr<T> const& t) -> decltype(t->position()) {
+      return t->position();
+    }
+
+    template <typename... Args>
+    auto position(boost::variant<Args...> const& t) {
+      return boost::apply_visitor([](auto&& v) { return position(v); }, t);
+    }
+
   } // namespace ast
 } // namespace scomp
 

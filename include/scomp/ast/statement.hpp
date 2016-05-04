@@ -45,17 +45,6 @@ namespace scomp {
                              expression const& v)
             : node_base(p), name(std::move(name)), typ(t), value(v) {}
 
-        // explicit valdef_stmt(std::string name, type&& t, expression&& v)
-        //     : name(std::move(name)), typ(std::move(t)), value(std::move(v)) {}
-        // explicit valdef_stmt(std::string name, type const& t,
-        //                      expression const& v)
-        //     : name(std::move(name)), typ(t), value(v) {}
-        //
-        // explicit valdef_stmt(std::string name, expression&& v)
-        //     : name(std::move(name)), typ(boost::none), value(std::move(v)) {}
-        // explicit valdef_stmt(std::string name, expression const& v)
-        //     : name(std::move(name)), typ(boost::none), value(v) {}
-
         std::string to_string() const;
       };
 

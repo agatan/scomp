@@ -77,15 +77,15 @@ namespace scomp {
       };
 
       struct apply_expr : node_base {
-        expression function;
+        expression callee;
         std::vector<expression> args;
 
         apply_expr(pos_type const& p, expression&& f,
                    std::vector<expression>&& a)
-            : node_base(p), function(std::move(f)), args(std::move(a)) {}
+            : node_base(p), callee(std::move(f)), args(std::move(a)) {}
         apply_expr(pos_type const& p, expression const& f,
                    std::vector<expression> const& a)
-            : node_base(p), function(f), args(a) {}
+            : node_base(p), callee(f), args(a) {}
 
         std::string to_string() const;
       };

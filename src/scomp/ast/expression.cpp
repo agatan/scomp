@@ -28,7 +28,7 @@ namespace scomp {
       }
 
       std::string apply_expr::to_string() const {
-        return (boost::format("%s(%s)") % stringize(function) %
+        return (boost::format("%s(%s)") % stringize(callee) %
                 boost::algorithm::join(
                     args | boost::adaptors::transformed(
                                [](auto const& e) { return stringize(e); }),
