@@ -13,8 +13,9 @@ namespace scomp {
     namespace parser {
 
       static parser_type<ast::type> primary_type() {
-        return cbx::map(varname(), [](auto&& s) {
-          return ast::make_type<ast::node::primary_type>(std::move(s));
+        return cbx::map(cbx::positioned(varname()), [](auto&& s) {
+          return ast::make_type<ast::node::primary_type>(s.first,
+                                                         std::move(s.second));
         });
       }
 
