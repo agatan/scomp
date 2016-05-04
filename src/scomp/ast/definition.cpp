@@ -16,9 +16,7 @@ namespace scomp {
       std::string val_def::to_string() const {
         std::stringstream ss;
         ss << "val " << name;
-        if (typ) {
-          ss << ": " << stringize(*typ);
-        }
+        ss << ": " << stringize(typ);
         ss << " = " << stringize(value);
         return ss.str();
       }

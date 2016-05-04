@@ -18,12 +18,14 @@ namespace scomp {
         auto const p =
             cbx::skip_seq(cbx::spaces())(keyword("val"), varname(), type_spec(),
                                          cbx::token('='), expression());
-        return cbx::map(p, [](auto&& t) {
+        return cbx::map(cbx::positioned(p), [](auto&& p) {
+          auto&& pos = p.first;
+          auto&& t = p.second;
           auto&& name = std::get<1>(t);
           auto&& ty = std::get<2>(t);
           auto&& value = std::get<4>(t);
           return ast::make_definition<ast::node::val_def>(
-              std::move(name), std::move(ty), std::move(value));
+              pos, std::move(name), std::move(ty), std::move(value));
         });
       }
 
@@ -49,7 +51,10 @@ namespace scomp {
             keyword("def"), varname(),
             cbx::between(lex(cbx::token('(')), lex(cbx::token(')')), params()),
             optional_type_spec(), cbx::token('='), expression());
-        return cbx::map(p, [](auto&& t) {
+
+        return cbx::map(cbx::positioned(p), [](auto&& p) {
+          auto&& pos = p.first;
+          auto&& t = p.second;
 
           std::string const& name = std::get<1>(t);
 
@@ -61,7 +66,8 @@ namespace scomp {
           ast::expression const& e = std::get<5>(t);
 
           return ast::make_definition<ast::node::fun_def>(
-              std::move(name), std::move(params), std::move(ret), std::move(e));
+              pos, std::move(name), std::move(params), std::move(ret),
+              std::move(e));
         });
       }
 
