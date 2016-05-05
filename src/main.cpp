@@ -6,6 +6,7 @@
 #include <scomp/ast/stringize.hpp>
 #include <scomp/ast/dump.hpp>
 #include <scomp/syntax/parser.hpp>
+#include <scomp/semantics/type.hpp>
 
 int main() {
   std::string line;
