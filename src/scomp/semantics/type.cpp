@@ -15,9 +15,16 @@ namespace scomp {
       return b;
     }
 
+    type& builtin_void() {
+      static type v = std::make_shared<type_node::builtin_type>("void");
+      return v;
+    }
+
     boost::optional<type> get_builtin_type(std::string const& name) {
       static std::unordered_map<std::string, type> builtin_types{
-          {"int", builtin_int()}, {"bool", builtin_bool()}};
+          {"int", builtin_int()},
+          {"bool", builtin_bool()},
+          {"void", builtin_void()}};
 
       auto it = builtin_types.find(name);
       if (it != builtin_types.end()) {

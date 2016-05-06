@@ -25,6 +25,8 @@ namespace scomp {
 
     } // namespace type_node
 
+    type& builtin_void();
+
     boost::optional<type> get_builtin_type(std::string const&);
 
   } // namespace semantics
