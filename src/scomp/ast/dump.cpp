@@ -24,13 +24,6 @@ namespace scomp {
           parent.put("primary_type", p->name);
         }
 
-        void operator()(unknown_type const& p) const {
-          ptree::ptree& t = parent.add("unknown_type", "");
-          if (p->ref != nullptr) {
-            dump_type(t, *p->ref);
-          }
-        }
-
       private:
         ptree::ptree& parent;
       };

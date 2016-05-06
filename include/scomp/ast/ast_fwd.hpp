@@ -27,7 +27,6 @@ namespace scomp {
 
       // types
       struct primary_type;
-      struct unknown_type;
     } // namespace node
 
     // expressions
@@ -57,7 +56,6 @@ namespace scomp {
 
     // types
     using primary_type = std::shared_ptr<node::primary_type>;
-    using unknown_type = std::shared_ptr<node::unknown_type>;
 
     using type = boost::variant<primary_type>;
 

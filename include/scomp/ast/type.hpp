@@ -25,21 +25,6 @@ namespace scomp {
         }
       };
 
-      struct unknown_type : node_base {
-        type *ref = nullptr;
-
-        explicit unknown_type() = default;
-        explicit unknown_type(pos_type const& p, type* r)
-            : node_base(p), ref(r) {}
-
-        std::string to_string() const {
-          if (!ref) {
-            return "unknown_type";
-          }
-          return "unknown_type(" + stringize(*ref) + ")";
-        }
-      };
-
     } // namespace node
   } // namespace ast
 } // namespace scomp

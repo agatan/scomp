@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include <boost/optional.hpp>
+
 namespace scomp {
   namespace semantics {
     namespace type_node {
@@ -22,6 +24,9 @@ namespace scomp {
       };
 
     } // namespace type_node
+
+    boost::optional<type> get_builtin_type(std::string const&);
+
   } // namespace semantics
 } // namespace scomp
 
