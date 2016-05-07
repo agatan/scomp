@@ -200,13 +200,7 @@ namespace scomp {
       }
 
       void operator()(ast::fun_def const& fundef) const {
-        auto funentry_opt = scope->find(fundef->name);
-        if (!funentry_opt || !helper::get<fun_entry>(*funentry_opt)) {
-          SCOMP_INTERNAL_ERROR_MSG(
-              "function definition should be collected in forward collect "
-              "phase");
-        }
-        auto fun = helper::get<fun_entry>(*funentry_opt, helper::no_option);
+        auto fun = fundef->entry;
         check_expression(fundef->body, filename, fun->fun_scope);
       }
 

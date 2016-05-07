@@ -10,6 +10,7 @@
 #include <boost/optional.hpp>
 
 #include <scomp/ast/node_base.hpp>
+#include <scomp/semantics/entry_fwd.hpp>
 
 namespace scomp {
   namespace ast {
@@ -39,6 +40,7 @@ namespace scomp {
         std::vector<std::pair<std::string, type>> params;
         boost::optional<type> return_type;
         expression body;
+        semantics::fun_entry entry;
 
         explicit fun_def() = default;
         fun_def(pos_type const& p, std::string name,

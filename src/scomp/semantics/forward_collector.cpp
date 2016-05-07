@@ -1,5 +1,6 @@
 #include <scomp/semantics/forward_collector.hpp>
 
+#include <scomp/helper/get.hpp>
 #include <scomp/internal_error.hpp>
 #include <scomp/ast/ast.hpp>
 #include <scomp/semantics/error.hpp>
@@ -44,7 +45,8 @@ namespace scomp {
         }
         fun_entry entry = std::make_shared<entry_node::fun_entry>(
             fundef->name, std::move(params), std::move(return_type), scope);
-        scope->define_symbol(fundef->name, std::move(entry));
+        fundef->entry = entry;
+        scope->define_symbol(fundef->name, entry);
       }
 
     private:

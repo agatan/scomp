@@ -18,30 +18,32 @@ endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
 # LLVM settings {{{
+set(LLVM_CONFIG llvm-config-3.8)
+
 execute_process(
   COMMAND
-  llvm-config --version
+  ${LLVM_CONFIG} --version
   OUTPUT_VARIABLE
   LLVM_VERSION
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 execute_process(
   COMMAND
-  llvm-config --includedir
+  ${LLVM_CONFIG} --includedir
   OUTPUT_VARIABLE
   LLVM_INCLUDE_DIRS
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 execute_process(
   COMMAND
-  llvm-config --libdir
+  ${LLVM_CONFIG} --libdir
   OUTPUT_VARIABLE
   LLVM_LIBRARY_DIRS
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 execute_process(
   COMMAND
-  llvm-config --libnames
+  ${LLVM_CONFIG} --libnames
   OUTPUT_VARIABLE
   LLVM_LIBRARY_NAMES_STRING
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -54,7 +56,7 @@ link_directories(${LLVM_LIBRARY_DIRS})
 
 execute_process(
   COMMAND
-  llvm-config --system-libs
+  ${LLVM_CONFIG} --system-libs
   OUTPUT_VARIABLE
   LLVM_SYS_LIBS
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -68,7 +70,7 @@ endforeach(l)
 
 execute_process(
   COMMAND
-  llvm-config --libs core support native asmparser asmprinter
+  ${LLVM_CONFIG} --libs core support native asmparser asmprinter
   OUTPUT_VARIABLE
   LLVM_LIBS_STRING
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -80,6 +82,8 @@ foreach (l ${LLVM_LIBS})
   string(REGEX REPLACE "-l([^ ]+)" "\\1" libname ${l})
   list(APPEND LLVM_LIBRARIES ${libname})
 endforeach()
+
+add_definitions(-D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS)
 # }}}
 
 add_subdirectory(src)

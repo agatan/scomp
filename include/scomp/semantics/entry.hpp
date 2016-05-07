@@ -55,9 +55,9 @@ namespace scomp {
               return_type(std::move(return_type)),
               fun_scope(std::make_shared<scope>(std::move(enclosing))) {
           for (auto&& param : this->params) {
-            fun_scope->define_symbol(param.first,
-                                     std::make_shared<var_entry>(
-                                         param.first, std::move(param.second)));
+            fun_scope->define_symbol(
+                param.first,
+                std::make_shared<var_entry>(param.first, param.second));
           }
         }
       };
