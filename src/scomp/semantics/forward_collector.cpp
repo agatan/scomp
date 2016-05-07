@@ -22,7 +22,7 @@ namespace scomp {
                                    valdef->name, std::move(*typ)));
           return;
         }
-        throw error(filename, valdef->position(), "No such type");
+        throw error(filename, ast::position(valdef->typ), "No such type");
       }
 
       void operator()(ast::fun_def const& fundef) const {

@@ -28,6 +28,13 @@ namespace scomp {
         return std::move(pos_);
       }
 
+      std::size_t line() const {
+        return pos_.line;
+      }
+      std::size_t column() const {
+        return pos_.column + 1;
+      }
+
       std::string const& message() const & {
         return message_;
       }

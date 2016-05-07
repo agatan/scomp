@@ -6,7 +6,8 @@
 #include <scomp/ast/stringize.hpp>
 #include <scomp/ast/dump.hpp>
 #include <scomp/syntax/parser.hpp>
-#include <scomp/semantics/entry.hpp>
+#include <scomp/semantics/error.hpp>
+#include <scomp/semantics/analyze.hpp>
 
 int main() {
   std::string line;
@@ -20,6 +21,15 @@ int main() {
     boost::property_tree::ptree root;
     scomp::ast::dump_module(root, res.unwrap());
     boost::property_tree::write_json(std::cout, root);
+
+    try {
+      auto scope = scomp::semantics::analyze(*res);
+      assert(static_cast<bool>(scope));
+    } catch (scomp::semantics::error const& err) {
+      std::cerr << err.filename() << ":" << err.line() << ":" << err.column()
+                << ": " << err.message() << std::endl;
+    }
+
   } else {
     auto&& pos = res.unwrap_error().position();
     std::cerr << "Parse error at line: " << pos.line << ", column: " << pos.column << "\n";
