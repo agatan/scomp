@@ -18,7 +18,7 @@ namespace scomp {
         return cbx::map(p, [filename = std::move(filename)](auto&& ds) {
           std::vector<ast::definition> dvs;
           std::move(ds.begin(), ds.end(), std::back_inserter(dvs));
-          return ast::module(std::move(filename), std::move(dvs));
+          return ast::module(filename, std::move(dvs), std::move(filename));
         });
       }
 

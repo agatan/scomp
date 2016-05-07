@@ -7,7 +7,7 @@
 namespace scomp {
   namespace semantics {
 
-    void type_check(ast::module&, scope_ptr const&);
+    void type_check(ast::module const&, std::string const&, scope_ptr const&);
 
   } // namespace semantics
 } // namespace scomp

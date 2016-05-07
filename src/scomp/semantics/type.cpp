@@ -1,3 +1,4 @@
+#include <scomp/internal_error.hpp>
 #include <scomp/semantics/type.hpp>
 
 #include <unordered_map>
@@ -37,6 +38,20 @@ namespace scomp {
       template <typename T, typename U>
       bool operator()(T const&, U const&) const {
         return false;
+      }
+
+      bool operator()(dummy_type const&, dummy_type const&) const {
+        SCOMP_INTERNAL_ERROR_MSG("dummy type should not be checked");
+      }
+
+      template <typename T>
+      bool operator()(dummy_type const&, T const&) const {
+        SCOMP_INTERNAL_ERROR_MSG("dummy type should not be checked");
+      }
+
+      template <typename T>
+      bool operator()(T const&, dummy_type const&) const {
+        SCOMP_INTERNAL_ERROR_MSG("dummy type should not be checked");
       }
 
       bool operator()(builtin_type const& lhs, builtin_type const& rhs) const {

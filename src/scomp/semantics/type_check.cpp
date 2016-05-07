@@ -87,7 +87,8 @@ namespace scomp {
         // argument type construction...
         std::vector<type> args_type;
         for (auto const& arg: app->args) {
-          args_type.emplace_back(boost::apply_visitor(*this, arg));
+          check_expression(arg, filename, scope);
+          args_type.push_back(get_type(arg));
         }
 
         // argument number check...
@@ -198,7 +199,7 @@ namespace scomp {
 
       void operator()(ast::fun_def const& fundef) const {
         auto funentry_opt = scope->find(fundef->name);
-        if (!funentry_opt || helper::get<fun_entry>(*funentry_opt)) {
+        if (!funentry_opt || !helper::get<fun_entry>(*funentry_opt)) {
           SCOMP_INTERNAL_ERROR_MSG(
               "function definition should be collected in forward collect "
               "phase");
@@ -215,6 +216,13 @@ namespace scomp {
     void check_definition(ast::definition const& def,
                           std::string const& filename, scope_ptr const& scope) {
       boost::apply_visitor(def_type_checker(filename, scope), def);
+    }
+
+    void type_check(ast::module const& mod, std::string const& filename,
+                    scope_ptr const& scope) {
+      for (auto&& def: mod.defs()) {
+        check_definition(def, filename, scope);
+      }
     }
 
   } // namespace semantics

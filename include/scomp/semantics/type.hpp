@@ -35,6 +35,8 @@ namespace scomp {
 
     namespace type_node {
 
+      struct dummy_type final {};
+
       struct builtin_type final {
         builtin_type() = default;
         explicit builtin_type(std::string name) noexcept
