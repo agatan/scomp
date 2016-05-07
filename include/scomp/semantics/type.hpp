@@ -10,6 +10,21 @@
 namespace scomp {
   namespace semantics {
 
+    template <typename T>
+    auto get_type(T const& t) -> decltype(t.type()) {
+      return t.type();
+    }
+
+    template <typename T>
+    auto get_type(T const& t) -> decltype(t->type()) {
+      return t->type();
+    }
+
+    template <typename... Ts>
+    auto get_type(boost::variant<Ts...> const& t) {
+      return boost::apply_visitor([](auto&& v) { return get_type(v); }, t);
+    }
+
     builtin_type& builtin_int();
     builtin_type& builtin_bool();
     builtin_type& builtin_void();

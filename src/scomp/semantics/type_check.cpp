@@ -11,6 +11,7 @@
 #include <scomp/internal_error.hpp>
 #include <scomp/ast/ast.hpp>
 #include <scomp/semantics/type.hpp>
+#include <scomp/semantics/translate_type.hpp>
 #include <scomp/semantics/entry.hpp>
 #include <scomp/semantics/error.hpp>
 
@@ -43,6 +44,21 @@ namespace scomp {
         auto ty = boost::apply_visitor(literal_type_visitor{}, lit->value);
         lit->type(ty);
         return ty;
+      }
+
+      type operator()(ast::var_expr const& var) const {
+        auto entry = scope->find(var->name);
+        if (!entry) {
+          throw error(filename, ast::position(var),
+                      "No such variable: " + var->name);
+        }
+        auto varentry = helper::get<var_entry>(*entry);
+        if (!varentry) {
+          throw error(filename, ast::position(var),
+                      var->name + " is not defined as variable");
+        }
+        var->type((*varentry)->type);
+        return var->type();
       }
 
       type operator()(ast::binop_expr const& binop) const {
@@ -107,8 +123,7 @@ namespace scomp {
         }
         auto last_elem = helper::get<ast::expr_stmt>(blk->body.back());
         if (last_elem) {
-          auto last_type = boost::apply_visitor(
-              [](auto&& e) { return e->type(); }, (*last_elem)->expr);
+          auto last_type = get_type((*last_elem)->expr);
           blk->type(last_type);
           return last_type;
         } else {
@@ -117,15 +132,51 @@ namespace scomp {
         }
       }
 
-      template <typename T>
-      type operator()(T) const {
-        SCOMP_INTERNAL_ERROR();
-      }
-
     private:
       std::string const& filename;
       scope_ptr const& scope;
     };
+
+    void check_expression(ast::expression const& expr,
+                          std::string const& filename, scope_ptr const& scope) {
+      boost::apply_visitor(expr_type_checker(filename, scope), expr);
+    }
+
+    struct stmt_type_checker : boost::static_visitor<> {
+      stmt_type_checker(std::string const& filename, scope_ptr const& scope)
+          : filename(filename), scope(scope) {}
+
+      void operator()(ast::expr_stmt const& e) const {
+        check_expression(e->expr, filename, scope);
+      }
+
+      void operator()(ast::valdef_stmt const& valdef) const {
+        check_expression(valdef->value, filename, scope);
+        if (valdef->typ) {
+          if (auto sem_type = translate_type(*valdef->typ, scope)) {
+            if (!match(get_type(valdef->value), *sem_type)) {
+              throw error(filename, ast::position(valdef->value), "Type mismatch");
+            }
+          }
+        }
+        var_entry entry = std::make_shared<entry_node::var_entry>(
+            valdef->name, get_type(valdef->value));
+        scope->define_symbol(valdef->name, std::move(entry));
+      }
+
+      void operator()(ast::return_stmt const&) const {
+        SCOMP_INTERNAL_ERROR_MSG("return statement is not implemented yet");
+      }
+
+     private:
+      std::string const& filename;
+      scope_ptr const& scope;
+    };
+
+    void check_statement(ast::statement const& stmt,
+                         std::string const& filename, scope_ptr const& scope) {
+      boost::apply_visitor(stmt_type_checker(filename, scope), stmt);
+    }
 
   } // namespace semantics
 } // namespace scomp
