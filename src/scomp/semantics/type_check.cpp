@@ -178,5 +178,44 @@ namespace scomp {
       boost::apply_visitor(stmt_type_checker(filename, scope), stmt);
     }
 
+    struct def_type_checker : boost::static_visitor<> {
+      def_type_checker(std::string const& filename, scope_ptr const& scope)
+          : filename(filename), scope(scope) {}
+
+      void operator()(ast::val_def const& valdef) const {
+        auto sem_type = translate_type(valdef->typ, scope);
+        if (!sem_type) {
+          throw error(filename, ast::position(valdef->typ), "No such type");
+        }
+        check_expression(valdef->value, filename, scope);
+        if (!match(get_type(valdef->value), *sem_type)) {
+          throw error(filename, ast::position(valdef->value), "Type mismatch");
+        }
+        auto entry = std::make_shared<entry_node::var_entry>(
+            valdef->name, get_type(valdef->value));
+        scope->define_symbol(valdef->name, entry);
+      }
+
+      void operator()(ast::fun_def const& fundef) const {
+        auto funentry_opt = scope->find(fundef->name);
+        if (!funentry_opt || helper::get<fun_entry>(*funentry_opt)) {
+          SCOMP_INTERNAL_ERROR_MSG(
+              "function definition should be collected in forward collect "
+              "phase");
+        }
+        auto fun = helper::get<fun_entry>(*funentry_opt, helper::no_option);
+        check_expression(fundef->body, filename, fun->fun_scope);
+      }
+
+    private:
+      std::string const& filename;
+      scope_ptr const& scope;
+    };
+
+    void check_definition(ast::definition const& def,
+                          std::string const& filename, scope_ptr const& scope) {
+      boost::apply_visitor(def_type_checker(filename, scope), def);
+    }
+
   } // namespace semantics
 } // namespace scomp
