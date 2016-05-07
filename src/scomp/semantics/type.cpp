@@ -5,23 +5,23 @@
 namespace scomp {
   namespace semantics {
 
-    static type& builtin_int() {
-      static type i = std::make_shared<type_node::builtin_type>("int");
+    builtin_type& builtin_int() {
+      static builtin_type i = std::make_shared<type_node::builtin_type>("int");
       return i;
     }
 
-    static type& builtin_bool() {
-      static type b = std::make_shared<type_node::builtin_type>("bool");
+    builtin_type& builtin_bool() {
+      static builtin_type b = std::make_shared<type_node::builtin_type>("bool");
       return b;
     }
 
-    type& builtin_void() {
-      static type v = std::make_shared<type_node::builtin_type>("void");
+    builtin_type& builtin_void() {
+      static builtin_type v = std::make_shared<type_node::builtin_type>("void");
       return v;
     }
 
-    boost::optional<type> get_builtin_type(std::string const& name) {
-      static std::unordered_map<std::string, type> builtin_types{
+    boost::optional<builtin_type> get_builtin_type(std::string const& name) {
+      static std::unordered_map<std::string, builtin_type> builtin_types{
           {"int", builtin_int()},
           {"bool", builtin_bool()},
           {"void", builtin_void()}};
@@ -31,6 +31,21 @@ namespace scomp {
         return it->second;
       }
       return boost::none;
+    }
+
+    struct match_visitor : boost::static_visitor<bool> {
+      template <typename T, typename U>
+      bool operator()(T const&, U const&) const {
+        return false;
+      }
+
+      bool operator()(builtin_type const& lhs, builtin_type const& rhs) const {
+        return lhs == rhs;
+      }
+    };
+
+    bool match(type const& lhs, type const& rhs) {
+      return boost::apply_visitor(match_visitor{}, lhs, rhs);
     }
 
   } // namespace semantics

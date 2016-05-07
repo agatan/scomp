@@ -27,19 +27,21 @@ namespace scomp {
 
       struct fun_entry {
         std::string name;
+        using param_type = std::pair<std::string, semantics::type>;
+        std::vector<param_type> params;
         semantics::type return_type;
         scope_ptr fun_scope;
 
-        using param_type = std::pair<std::string, semantics::type>;
 
         fun_entry() = default;
         fun_entry(std::string name, std::vector<param_type> const& params,
                   semantics::type const& return_type,
                   enclosing_scope_ptr&& enclosing)
             : name(std::move(name)),
+              params(params),
               return_type(return_type),
               fun_scope(std::make_shared<scope>(std::move(enclosing))) {
-          for (auto&& param : params) {
+          for (auto&& param : this->params) {
             fun_scope->define_symbol(
                 param.first,
                 std::make_shared<var_entry>(param.first, param.second));
@@ -49,9 +51,10 @@ namespace scomp {
                   semantics::type&& return_type,
                   enclosing_scope_ptr&& enclosing)
             : name(std::move(name)),
+              params(std::move(params)),
               return_type(std::move(return_type)),
               fun_scope(std::make_shared<scope>(std::move(enclosing))) {
-          for (auto&& param : params) {
+          for (auto&& param : this->params) {
             fun_scope->define_symbol(param.first,
                                      std::make_shared<var_entry>(
                                          param.first, std::move(param.second)));

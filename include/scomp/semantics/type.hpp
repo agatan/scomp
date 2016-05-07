@@ -9,6 +9,15 @@
 
 namespace scomp {
   namespace semantics {
+
+    builtin_type& builtin_int();
+    builtin_type& builtin_bool();
+    builtin_type& builtin_void();
+
+    boost::optional<builtin_type> get_builtin_type(std::string const&);
+
+    bool match(type const&, type const&);
+
     namespace type_node {
 
       struct builtin_type final {
@@ -24,10 +33,6 @@ namespace scomp {
       };
 
     } // namespace type_node
-
-    type& builtin_void();
-
-    boost::optional<type> get_builtin_type(std::string const&);
 
   } // namespace semantics
 } // namespace scomp

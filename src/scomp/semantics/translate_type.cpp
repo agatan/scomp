@@ -15,7 +15,7 @@ namespace scomp {
         result_type operator()(ast::primary_type const& t) const {
           auto builtin = get_builtin_type(t->name);
           if (builtin) {
-            return builtin;
+            return type(*builtin);
           }
           return boost::none;
         }
