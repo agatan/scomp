@@ -102,10 +102,12 @@ namespace scomp {
         }
 
         // argument type check...
-        for (decltype(args_type)::size_type i = 0; i < funentry->params.size();
+        for (decltype(args_type)::size_type i = 0; i < funentry->params.size() - 1;
              ++i) {
           if (!match(args_type[i], funentry->params[i].second)) {
-            throw error(filename, ast::position(app->args[i]), "Type mismatch");
+            throw error(filename, ast::position(app->args[i]),
+                        "Type mismatch: " + to_string(args_type[i]) + " & " +
+                            to_string(funentry->params[i].second));
           }
         }
 

@@ -63,5 +63,18 @@ namespace scomp {
       return boost::apply_visitor(match_visitor{}, lhs, rhs);
     }
 
+    struct stringize_visitor : boost::static_visitor<std::string> {
+      std::string operator()(dummy_type const&) const {
+        return "DUMMY_TYPE";
+      }
+      std::string operator()(builtin_type const& b) const {
+        return b->name();
+      }
+    };
+
+    std::string to_string(type const& t) {
+      return boost::apply_visitor(stringize_visitor(), t);
+    }
+
   } // namespace semantics
 } // namespace scomp

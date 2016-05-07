@@ -33,6 +33,8 @@ namespace scomp {
 
     bool match(type const&, type const&);
 
+    std::string to_string(type const&);
+
     namespace type_node {
 
       struct dummy_type final {};
